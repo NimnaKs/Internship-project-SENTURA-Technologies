@@ -30,4 +30,11 @@ public class UserController {
         UserDTO user = userService.getUser(userId, trashed);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable String userId,
+                                              @Valid @RequestBody UserDTO userDTO) {
+        UserDTO updatedUser = userService.updateUser(userId, userDTO);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
 }
