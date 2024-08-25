@@ -47,18 +47,22 @@ public class UserService {
                     .addHeader("Content-Type", "application/json")
                     .build();
 
-
             try (Response response = client.newCall(request).execute()) {
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
                     return objectMapper.readValue(responseBody, UserDTO.class);
                 } else {
-                    throw new RuntimeException("Failed to save user: " + response.message());
+                    System.out.println("Failed to save user: " + response.message());
+                    throw new RuntimeException("Failed to save user: " + response);
                 }
             }
         } catch (JsonProcessingException e) {
+            System.out.println("Error converting user to JSON");
+            e.printStackTrace();
             throw new RuntimeException("Error converting user to JSON", e);
         } catch (IOException e) {
+            System.out.println("Error making HTTP request to Weavy API");
+            e.printStackTrace();
             throw new RuntimeException("Error making HTTP request to Weavy API", e);
         }
     }
@@ -97,7 +101,7 @@ public class UserService {
             RequestBody body = RequestBody.create(jsonBody, MediaType.parse("application/json"));
             Request request = new Request.Builder()
                     .url(endpoint)
-                    .patch(body)
+                    .put(body)
                     .addHeader("Authorization", "Bearer " + weavyApiToken)
                     .addHeader("Content-Type", "application/json")
                     .build();
@@ -119,11 +123,11 @@ public class UserService {
 
 
     public void deleteUser(String userId) {
-        String endpoint = weavyApiUrl + "/api/users/" + userId;
+        String endpoint = weavyApiUrl + "/api/users/" + userId+"/trash";
 
         Request request = new Request.Builder()
                 .url(endpoint)
-                .delete()
+                .post(RequestBody.create(new byte[0]))
                 .addHeader("Authorization", "Bearer " + weavyApiToken)
                 .build();
 
